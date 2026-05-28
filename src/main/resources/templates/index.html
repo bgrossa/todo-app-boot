@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>TODOアプリ</title>
+</head>
+<body>
+	
+	<h1>TODOアプリ</h1>
+	
+	<form action="/add" method="post">
+		
+		<input type="text" name="taskName">
+		
+		<button type="submit">
+			追加
+		</button>
+		
+	</form>
+	
+	<hr>
+	
+	<ul>
+		
+		<li th:each="task, stat : ${tasks}">
+		
+			<span th:if="${task.completed}"
+				  style="text-decoration: line-through; color:gray;">
+				[[${task.name}]]
+			</span>
+			
+			<span th:unless="${task.completed}">
+				[[${task.name}]]
+			</span>
+			
+			<!-- 完了ボタン -->
+			<form action="/complete"
+				  method="post"
+				  style="display:inline;">
+			
+			<input type="hidden"
+				   name="index"
+				   th:value="${stat.index}">
+				   
+			<button type="submit">
+				完了
+			</button>
+			</form>
+		</li>
+
+	</ul>
+	
+</body>
+</html>
