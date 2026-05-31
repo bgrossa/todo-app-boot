@@ -20,34 +20,88 @@
 	
 	<hr>
 	
+	<h2>未完了</h2>
+	
 	<ul>
 		
-		<li th:each="task, stat : ${tasks}">
-		
-			<span th:if="${task.completed}"
-				  style="text-decoration: line-through; color:gray;">
-				[[${task.name}]]
-			</span>
+		<li th:each="task, stat : ${tasks}"
+			th:if="${!task.completed}">
 			
-			<span th:unless="${task.completed}">
 				[[${task.name}]]
-			</span>
 			
-			<!-- 完了ボタン -->
+			<!-- 完了 -->
 			<form action="/complete"
 				  method="post"
 				  style="display:inline;">
 			
-			<input type="hidden"
-				   name="index"
-				   th:value="${stat.index}">
+				<input type="hidden"
+					   name="index"
+					   th:value="${stat.index}">
 				   
-			<button type="submit">
-				完了
-			</button>
+				<button type="submit">
+					完了
+				</button>
+			</form>
+			
+			<!-- 削除 -->
+			<form action="/delete"
+				  method="post"
+				  style="display:inline;">
+						
+				<input type="hidden"
+					   name="index"
+					   th:value="${stat.index}">
+							   
+				<button type="submit">
+					削除
+				</button>
+			</form>
+
+		</li>
+		
+	</ul>		
+	
+	<hr>
+		
+	<h2>完了済み</h2>
+
+	<ul>
+			
+		<li th:each="task, stat : ${tasks}"
+			th:if="${task.completed}">
+			
+			<span style="text-decoration: line-through; color: gray;">
+			[[${task.name}]]
+			</span>
+			
+			<!-- 戻す -->
+			<form action="/undo"
+				  method="post"
+				  style="display:inline;">
+									
+				<input type="hidden"
+				 	   name="index"
+				   	   th:value="${stat.index}">
+										   
+				<button type="submit">
+					戻す
+				</button>
+			</form>
+			
+			<!-- 削除 -->
+			<form action="/delete"
+				  method="post"
+				  style="display:inline;">
+									
+				<input type="hidden"
+					   name="index"
+					   th:value="${stat.index}">
+										   
+				<button type="submit">
+					削除
+				</button>
 			</form>
 		</li>
-
 	</ul>
 	
 </body>

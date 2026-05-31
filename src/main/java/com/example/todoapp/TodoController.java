@@ -48,4 +48,12 @@ public class TodoController {
 		
 		return "redirect:/";
 	}
+	
+	@PostMapping("/undo")
+	public String undoTask(@RequestParam int index) {
+		
+		tasks.get(index).setCompleted(false);
+		
+		return "redirect:/";
+	}
 }
