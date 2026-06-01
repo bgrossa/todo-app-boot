@@ -5,11 +5,13 @@ public class Task {
 	private String name;
 	private boolean completed;
 	private String priority;
+	private String deadline;
 	
-	public Task(String name, String priority) {
+	public Task(String name, String priority, String deadline) {
 		this.name = name;
 		this.completed = false;
 		this.priority = priority;
+		this.deadline = deadline;
 	}
 	
 	public String getName() {
@@ -34,5 +36,13 @@ public class Task {
 	
 	public void setPriority(String priority) {
 		this.priority = priority;
+	}
+	
+	public String getDeadline() {
+		return deadline;
+	}
+	
+	public void setDeadline(String deadline) {
+		this.deadline = deadline;
 	}
 }

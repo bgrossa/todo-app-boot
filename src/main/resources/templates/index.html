@@ -35,19 +35,22 @@
 				   required>
 				   
 			<select name="priority"
-					class="form-select"
+					class="form-select mb-3"
 					required>
 				<option value="高">高</option>
 				<option value="中" selected>中</option>
 				<option value="低">低</option>
 			</select>
 			
+			<input type="date"
+				   name="deadline"
+				   class="form-control">
+			
 			<button type="submit"
 					class="btn btn-primary">
 				追加
 			</button>
 		</form>
-		
 		<form action="/" method="get">
 			<input type="text"
 				   name="keyword"
@@ -89,6 +92,18 @@
 						  class="badge bg-success">
 						低
 					</span>
+					
+					<br>
+					
+					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline < today}"
+						   class="text-danger fw-bold">
+						期限：[[${task.deadline}]] ※期限切れ
+					</small>
+
+					<small th:if="${task.deadline == null || task.deadline == '' || task.deadline >= today}"
+						   class="text-muted">
+						期限：[[${task.deadline}]]
+					</small>
 					
 				</span>
 				
@@ -174,6 +189,19 @@
 						  class="badge bg-success">
 						低
 					</span>
+					
+					<br>
+					
+					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline < today}"
+						   class="text-danger fw-bold">
+						期限：[[${task.deadline}]] ※期限切れ
+					</small>
+
+					<small th:if="${task.deadline == null || task.deadline == '' || task.deadline >= today}"
+						   class="text-muted">
+						期限：[[${task.deadline}]]
+					</small>
+					
 				</span>
 				
 				<div>

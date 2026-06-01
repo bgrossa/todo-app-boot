@@ -1,5 +1,6 @@
 package com.example.todoapp;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,10 @@ public class TodoController {
 	@PostMapping("/add")
 	public String addTask(
 			@RequestParam String taskName,
-			@RequestParam String priority) {
-			
-			tasks.add(new Task(taskName, priority));
+			@RequestParam String priority,
+			@RequestParam String deadline) {
+
+			tasks.add(new Task(taskName, priority, deadline));
 			
 			return "redirect:/";
 	}
@@ -64,9 +66,13 @@ public class TodoController {
 	@PostMapping("/update")
 	public String updateTask(
 			@RequestParam int index,
-			@RequestParam String taskName) {
+			@RequestParam String taskName,
+			@RequestParam String priority,
+			@RequestParam String deadline) {
 		
 		tasks.get(index).setName(taskName);
+		tasks.get(index).setPriority(priority);
+		tasks.get(index).setDeadline(deadline);
 		
 		return "redirect:/";
 	}
@@ -97,6 +103,7 @@ public class TodoController {
 		model.addAttribute("taskCount", filteredTasks.size());
 		model.addAttribute("completedCount", completedCount);
 		model.addAttribute("keyword", keyword);
+		model.addAttribute("today", LocalDate.now().toString());
 		
 		return "index";
 	}
