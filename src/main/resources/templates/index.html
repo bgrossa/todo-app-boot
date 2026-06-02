@@ -115,8 +115,8 @@
 						  style="display:inline;">
 						  
 						<input type="hidden"
-							   name="index"
-							   th:value="${stat.index}">
+							   name="id"
+							   th:value="${task.id}">
 							   
 						<button type="submit"
 								class="btn btn-secondary btn-sm">
@@ -132,8 +132,8 @@
 						  style="display:inline;">
 					
 						<input type="hidden"
-							   name="index"
-							   th:value="${stat.index}">
+							   name="id"
+							   th:value="${task.id}">
 						   
 						<button type="submit"
 								class="btn btn-success btn-sm">
@@ -144,11 +144,12 @@
 					<!-- 削除 -->
 					<form action="/delete"
 						  method="post"
-						  style="display:inline;">
+						  style="display:inline;"
+						  onsubmit="return confirm('本当に削除しますか？');">
 								
 						<input type="hidden"
-							   name="index"
-							   th:value="${stat.index}">
+							   name="id"
+							   th:value="${task.id}">
 									   
 						<button type="submit"
 								class="btn btn-danger btn-sm">
@@ -212,8 +213,8 @@
 						  style="display:inline;">
 											
 						<input type="hidden"
-						 	   name="index"
-						   	   th:value="${stat.index}">
+						 	   name="id"
+						   	   th:value="${task.id}">
 												   
 						<button type="submit"
 								class="btn btn-warning btn-sm">
@@ -224,11 +225,12 @@
 					<!-- 削除 -->
 					<form action="/delete"
 						  method="post"
-						  style="display:inline;">
+						  style="display:inline;"
+						  onsubmit="return confirm('本当に削除しますか？');">
 								
 						<input type="hidden"
-							   name="index"
-							   th:value="${stat.index}">
+							   name="id"
+							   th:value="${task.id}">
 									   
 						<button type="submit"
 								class="btn btn-danger btn-sm">

@@ -19,14 +19,27 @@
 		<form action="/update" method="post">
 			
 			<input type="hidden"
-				   name="index"
-				   th:value="${index}">
+				   name="id"
+				   th:value="${task.id}">
 				   
 		    <input type="text"
 			   	   name="taskName"
 				   class="form-control mb-3"
 			   	   th:value="${task.name}">
-				   
+			
+			<select name="priority"
+					class="form-select mb-3"
+					required>
+				
+				<option value="高"
+						th:selected="${task.priority == '高'}">高</option>
+				<option value="中"
+						th:selected="${task.priority == '中'}">中</option>
+				<option value="低"
+						th:selected="${task.priority == '低'}">低</option>
+				
+			</select>
+			
 			<input type="date"
 				   name="deadline"
 				   class="form-control mb-3"

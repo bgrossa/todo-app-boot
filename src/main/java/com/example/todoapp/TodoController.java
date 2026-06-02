@@ -1,7 +1,6 @@
 package com.example.todoapp;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class TodoController {
 	
-	ArrayList<Task> tasks = new ArrayList<>();
+	private final TaskRepository taskRepository;
+	
+	public TodoController(TaskRepository taskRepository) {
+		this.taskRepository = taskRepository;
+	}
+	
 	
 	@PostMapping("/add")
 	public String addTask(
@@ -21,81 +25,89 @@ public class TodoController {
 			@RequestParam String priority,
 			@RequestParam String deadline) {
 
-			tasks.add(new Task(taskName, priority, deadline));
+			taskRepository.save(new Task(taskName, priority, deadline));
 			
 			return "redirect:/";
 	}
 	
 	@PostMapping("/delete")
-	public String deleteTask(
-		@RequestParam int index
-	) {
+	public String deleteTask(@RequestParam Long id) {
 		
-		tasks.remove(index);
+		taskRepository.deleteById(id);
 		
 		return "redirect:/";
 	}
 	
 	@PostMapping("/complete")
-	public String completeTask(@RequestParam int index) {
+	public String completeTask(@RequestParam Long id) {
 		
-		tasks.get(index).setCompleted(true);
+		Task task = taskRepository.findById(id).orElseThrow();
+		task.setCompleted(true);
+		taskRepository.save(task);
 		
 		return "redirect:/";
 	}
 	
 	@PostMapping("/undo")
-	public String undoTask(@RequestParam int index) {
+	public String undoTask(@RequestParam Long id) {
 		
-		tasks.get(index).setCompleted(false);
-		
+		Task task = taskRepository.findById(id).orElseThrow();
+		task.setCompleted(false);
+		taskRepository.save(task);
+
 		return "redirect:/";
 	}
 	
 	@GetMapping("/edit")
 	public String editForm(
-			@RequestParam int index,
+			@RequestParam Long id,
 			Model model) {
 		
-		model.addAttribute("index", index);
-		model.addAttribute("task", tasks.get(index));
+		Task task = taskRepository.findById(id).orElseThrow();
+		
+		model.addAttribute("task", task);
 		
 		return "edit";
 	}
 	
 	@PostMapping("/update")
 	public String updateTask(
-			@RequestParam int index,
+			@RequestParam Long id,
 			@RequestParam String taskName,
-			@RequestParam String priority,
+			@RequestParam(required = false) String priority,
 			@RequestParam String deadline) {
 		
-		tasks.get(index).setName(taskName);
-		tasks.get(index).setPriority(priority);
-		tasks.get(index).setDeadline(deadline);
+		Task task = taskRepository.findById(id).orElseThrow();
+		
+		task.setName(taskName);
+		task.setDeadline(deadline);
+		
+		if (priority != null) {
+			task.setPriority(priority);
+		}
+		
+		taskRepository.save(task);
 		
 		return "redirect:/";
 	}
 	
 	@GetMapping("/")
 	public String index(
-			@RequestParam(required = false)
-			String keyword,
+			@RequestParam(required = false)	String keyword,
 			Model model) {
 		
+		List<Task> tasks = taskRepository.findAllByOrderByDeadlineAsc();
 		List<Task> filteredTasks;
 		
 		if (keyword == null || keyword.isBlank()) {
 			filteredTasks = tasks;
 		} else {
 			filteredTasks =tasks.stream()
-				.filter(task ->
-					task.getName().contains(keyword))
+				.filter(task ->	task.getName().contains(keyword))
 				.toList();
 		}
 		
-		long completedCount =
-			filteredTasks.stream()
+		long completedCount = filteredTasks.stream()
 				.filter(Task::isCompleted)
 				.count();
 
