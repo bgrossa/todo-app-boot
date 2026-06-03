@@ -24,10 +24,16 @@ public class TodoController {
 			@RequestParam String taskName,
 			@RequestParam String priority,
 			@RequestParam String deadline) {
-
-			taskRepository.save(new Task(taskName, priority, deadline));
 			
+		String cleanedTaskName = taskName.strip();
+		
+		if (cleanedTaskName.isBlank()) {
 			return "redirect:/";
+		}
+		
+		taskRepository.save(new Task(cleanedTaskName, priority, deadline));
+		
+		return "redirect:/";
 	}
 	
 	@PostMapping("/delete")
@@ -76,10 +82,16 @@ public class TodoController {
 			@RequestParam String taskName,
 			@RequestParam(required = false) String priority,
 			@RequestParam String deadline) {
+				
+		String cleanedTaskName = taskName.strip();
 		
+		if (cleanedTaskName.isBlank()) {
+			return "redirect:/";
+		}
+
 		Task task = taskRepository.findById(id).orElseThrow();
 		
-		task.setName(taskName);
+		task.setName(cleanedTaskName);
 		task.setDeadline(deadline);
 		
 		if (priority != null) {
@@ -94,27 +106,34 @@ public class TodoController {
 	@GetMapping("/")
 	public String index(
 			@RequestParam(required = false)	String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status,
 			Model model) {
 		
-		List<Task> tasks = taskRepository.findAllByOrderByDeadlineAsc();
 		List<Task> filteredTasks;
+		boolean hasKeyword = keyword != null && !keyword.isBlank();
 		
-		if (keyword == null || keyword.isBlank()) {
-			filteredTasks = tasks;
+		if ("completed".equals(status)) {
+			filteredTasks = hasKeyword
+					? taskRepository.findByNameContainingAndCompletedOrderByDeadlineAsc(keyword, true)
+					: taskRepository.findByCompletedOrderByDeadlineAsc(true);
+
+		} else if ("active".equals(status)) {
+			filteredTasks = hasKeyword
+					? taskRepository.findByNameContainingAndCompletedOrderByDeadlineAsc(keyword, false)
+					: taskRepository.findByCompletedOrderByDeadlineAsc(false);
 		} else {
-			filteredTasks =tasks.stream()
-				.filter(task ->	task.getName().contains(keyword))
-				.toList();
+			filteredTasks = hasKeyword
+					? taskRepository.findByNameContainingOrderByDeadlineAsc(keyword)
+					: taskRepository.findAllByOrderByDeadlineAsc();
 		}
 		
-		long completedCount = filteredTasks.stream()
-				.filter(Task::isCompleted)
-				.count();
+		long completedCount = taskRepository.findByCompletedOrderByDeadlineAsc(true).size();
 
 		model.addAttribute("tasks", filteredTasks);
-		model.addAttribute("taskCount", filteredTasks.size());
+		model.addAttribute("displayCount", filteredTasks.size());
 		model.addAttribute("completedCount", completedCount);
 		model.addAttribute("keyword", keyword);
+		model.addAttribute("status", status);
 		model.addAttribute("today", LocalDate.now().toString());
 		
 		return "index";

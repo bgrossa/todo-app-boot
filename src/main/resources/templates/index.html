@@ -19,9 +19,9 @@
 		</h1>
 		
 		<p class="text-muted">
-			登録件数：[[${taskCount}]]件
+			表示件数：[[${displayCount}]]件
 			／
-			完了：[[${completedCount}]]件
+			全体の完了：[[${completedCount}]]件
 		</p>
 	
 		<form action="/add"
@@ -54,13 +54,23 @@
 		<form action="/" method="get">
 			<input type="text"
 				   name="keyword"
+				   th:value="${keyword}"
 				   placeholder="検索">
+			
+			<select name="status">
+				<option value="all"
+						th:selected="${status == 'all'}">すべて</option>
+				<option value="active"
+						th:selected="${status == 'active'}">未完了</option>
+				<option value="completed"
+						th:selected="${status == 'completed'}">完了済み</option>
+			</select>
 				   
 			<button type="submit">
 				検索
 			</button>
 		</form>
-				
+		
 	</div>
 	
 </div>
