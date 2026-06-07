@@ -18,6 +18,11 @@
 			TODOアプリ
 		</h1>
 		
+		<div th:if="${errorMessage}"
+			 class="alert alert-danger">
+		 	[[${errorMessage}]]
+		 </div>
+		
 		<p class="text-muted">
 			表示件数：[[${displayCount}]]件
 			／
@@ -105,12 +110,26 @@
 					
 					<br>
 					
+					<!-- 期限なし -->
+					<small th:if="${task.deadline == null || task.deadline == ''}"
+						   class="test-muted">
+						期限なし   
+					</small>
+					
+					<!-- 期限切れ -->
 					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline < today}"
 						   class="text-danger fw-bold">
 						期限：[[${task.deadline}]] ※期限切れ
 					</small>
-
-					<small th:if="${task.deadline == null || task.deadline == '' || task.deadline >= today}"
+					
+					<!-- 今日が期限-->
+					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline == today}"
+						   class="text-warning fw-bold">
+						期限：[[${task.deadline}]] ※今日まで
+					</small>
+					
+					<!-- 未来の期限 -->
+					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline > today}"
 						   class="text-muted">
 						期限：[[${task.deadline}]]
 					</small>
@@ -203,12 +222,17 @@
 					
 					<br>
 					
+					<small th:if="${task.deadline == null || task.deadline == ''}"
+						   class="test-muted">
+						期限なし   
+					</small>
+
 					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline < today}"
 						   class="text-danger fw-bold">
 						期限：[[${task.deadline}]] ※期限切れ
 					</small>
 
-					<small th:if="${task.deadline == null || task.deadline == '' || task.deadline >= today}"
+					<small th:if="${task.deadline != null && task.deadline != '' && task.deadline >= today}"
 						   class="text-muted">
 						期限：[[${task.deadline}]]
 					</small>

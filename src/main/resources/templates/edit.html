@@ -16,6 +16,11 @@
 	<div class="card-body">
 		<h1 class="mb-4">タスク編集</h1>
 		
+		<div th:if="${errorMessage}"
+			 class="alert alert-danger">
+		 	[[${errorMessage}]]
+		 </div>
+		
 		<form action="/update" method="post">
 			
 			<input type="hidden"
