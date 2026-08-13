@@ -25,6 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam String taskName,
 			@RequestParam String priority,
 			@RequestParam String deadline,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status,
 			RedirectAttributes redirectattributes) {
 			
 		String cleanedTaskName = taskName.strip();
@@ -36,45 +38,68 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		
 		taskRepository.save(new Task(cleanedTaskName, priority, deadline));
 		
-		return "redirect:/";
+		return redirectToIndex(keyword, status);
 	}
 	
 	@PostMapping("/delete")
-	public String deleteTask(@RequestParam Long id) {
+	public String deleteTask(
+			@RequestParam Long id,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status) {
 		
 		taskRepository.deleteById(id);
 		
-		return "redirect:/";
+		return redirectToIndex(keyword, status);
+	}
+	
+	@PostMapping("/delete-completed")
+	public String deleteCompletedTasks(
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status) {
+		
+		taskRepository.deleteByCompletedTrue();
+		
+		return redirectToIndex(keyword, status);
 	}
 	
 	@PostMapping("/complete")
-	public String completeTask(@RequestParam Long id) {
+	public String completeTask(
+			@RequestParam Long id,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status) {
 		
 		Task task = taskRepository.findById(id).orElseThrow();
 		task.setCompleted(true);
 		taskRepository.save(task);
 		
-		return "redirect:/";
+		return redirectToIndex(keyword, status);
 	}
 	
 	@PostMapping("/undo")
-	public String undoTask(@RequestParam Long id) {
+	public String undoTask(
+			@RequestParam Long id,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status) {
 		
 		Task task = taskRepository.findById(id).orElseThrow();
 		task.setCompleted(false);
 		taskRepository.save(task);
 
-		return "redirect:/";
+		return redirectToIndex(keyword, status);
 	}
 	
 	@GetMapping("/edit")
 	public String editForm(
 			@RequestParam Long id,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status,
 			Model model) {
 		
 		Task task = taskRepository.findById(id).orElseThrow();
 		
 		model.addAttribute("task", task);
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("status", status);
 		
 		return "edit";
 	}
@@ -85,13 +110,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam String taskName,
 			@RequestParam(required = false) String priority,
 			@RequestParam String deadline,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(required = false, defaultValue = "all") String status,
 			RedirectAttributes redirectAttributes) {
-				
+			
 		String cleanedTaskName = taskName.strip();
 		
 		if (cleanedTaskName.isBlank()) {
 			redirectAttributes.addFlashAttribute("errorMessage", "タスク名を入力してください");
-			return "redirect:/edit?id=" + id;
+			return redirectToEdit(id, keyword, status);
 		}
 
 		Task task = taskRepository.findById(id).orElseThrow();
@@ -105,7 +132,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		
 		taskRepository.save(task);
 		
-		return "redirect:/";
+		return redirectToIndex(keyword, status);
+	}
+	
+	private String redirectToEdit(Long id, String keyword, String status) {
+		String redirectUrl = "redirect:/edit?id=" + id + "&status=" + status;
+		
+		if (keyword != null && !keyword.isBlank()) {
+			redirectUrl += "&keyword=" + keyword;
+	}
+		
+		return redirectUrl;
 	}
 	
 	@GetMapping("/")
@@ -142,6 +179,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		model.addAttribute("today", LocalDate.now().toString());
 		
 		return "index";
+	}
+	
+	private String redirectToIndex(String keyword, String status) {
+		String redirectUrl = "redirect:/?status=" + status;
+		
+		if (keyword != null && !keyword.isBlank()) {
+			redirectUrl += "&keyword=" + keyword;
+		}
+		
+		return redirectUrl;
 	}
 	
 }
