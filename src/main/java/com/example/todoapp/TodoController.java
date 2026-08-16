@@ -178,7 +178,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 					: taskRepository.findAllOrderByDeadlineWithEmptyLast();
 		}
 		
-		long completedCount = taskRepository.findByCompletedOrderByDeadlineWithEmptyLast(true).size();
+		long completedCount = taskRepository.countByCompletedTrue();
 
 		model.addAttribute("tasks", filteredTasks);
 		model.addAttribute("displayCount", filteredTasks.size());
