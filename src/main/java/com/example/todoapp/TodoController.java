@@ -1,5 +1,7 @@
 package com.example.todoapp;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,7 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		
 		if (cleanedTaskName.isBlank()) {
 			redirectattributes.addFlashAttribute("errorMessage", "タスク名を入力してください");
-			return "redirect:/";
+			return redirectToIndex(keyword, status);
 		}
 		
 		taskRepository.save(new Task(cleanedTaskName, priority, deadline));
@@ -136,10 +138,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 	}
 	
 	private String redirectToEdit(Long id, String keyword, String status) {
+		status = normalizeStatus(status);
+		keyword = normalizeKeyword(keyword);
+		
 		String redirectUrl = "redirect:/edit?id=" + id + "&status=" + status;
 		
-		if (keyword != null && !keyword.isBlank()) {
-			redirectUrl += "&keyword=" + keyword;
+		if (!keyword.isBlank()) {
+			redirectUrl += "&keyword=" + encodeKeyword(keyword);
 	}
 		
 		return redirectUrl;
@@ -151,8 +156,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 			@RequestParam(required = false, defaultValue = "all") String status,
 			Model model) {
 		
+		status = normalizeStatus(status);
+		
+		keyword = normalizeKeyword(keyword);
+		
 		List<Task> filteredTasks;
-		boolean hasKeyword = keyword != null && !keyword.isBlank();
+		boolean hasKeyword = !keyword.isBlank();
 		
 		if ("completed".equals(status)) {
 			filteredTasks = hasKeyword
@@ -182,13 +191,36 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 	}
 	
 	private String redirectToIndex(String keyword, String status) {
+		status = normalizeStatus(status);
+		keyword = normalizeKeyword(keyword);
+		
 		String redirectUrl = "redirect:/?status=" + status;
 		
-		if (keyword != null && !keyword.isBlank()) {
-			redirectUrl += "&keyword=" + keyword;
+		if (!keyword.isBlank()) {
+			redirectUrl += "&keyword=" + encodeKeyword(keyword);
 		}
 		
 		return redirectUrl;
+	}
+	
+	private String encodeKeyword(String keyword) {
+		return URLEncoder.encode(keyword, StandardCharsets.UTF_8);
+	}
+	
+	private String normalizeStatus(String status) {
+		if ("active".equals(status) || "completed".equals(status)){
+			return status;
+		}
+		
+		return "all";
+	}
+	
+	private String normalizeKeyword(String keyword) {
+		if (keyword == null) {
+			return "";
+		}
+		
+		return keyword.strip();
 	}
 	
 }
