@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-	@Controller
-	public class TodoController {
+@Controller
+public class TodoController {
 	
 	private final TaskRepository taskRepository;
 	
@@ -145,7 +145,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 		
 		if (!keyword.isBlank()) {
 			redirectUrl += "&keyword=" + encodeKeyword(keyword);
-	}
+		}
 		
 		return redirectUrl;
 	}
