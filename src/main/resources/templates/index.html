@@ -117,7 +117,7 @@
 				th:if="${!task.completed}"
 				class="list-group-item d-flex justify-content-between align-items-center">
 				
-				<span>
+				<span class="flex-grow-1 me-3">
 					[[${task.name}]]
 					
 					<span th:if="${task.priority == '高'}"
@@ -163,7 +163,7 @@
 					
 				</span>
 				
-				<div>
+				<div class="d-flex gap-2 flex-shrink-0">
 					
 					<!-- 編集 -->
 					<form action="/edit"
@@ -324,7 +324,7 @@
 					
 				</span>
 				
-				<div>
+				<div class="d-flex gap-2 flex-shrink-0">
 				
 					<!-- 戻す -->
 					<form action="/undo"
